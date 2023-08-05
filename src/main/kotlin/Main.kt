@@ -9,6 +9,7 @@ class taskList(){
     var task =0
     var priority=""
     init{
+
         all@ while (true){
             println("Input an action (add, print, end):")
             command= readln()
