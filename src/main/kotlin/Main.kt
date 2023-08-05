@@ -3,17 +3,6 @@ import kotlinx.datetime.*
 import java.lang.Exception
 import java.time.LocalTime
 
-
-
-//Create a LocalDateTime instance for 2021-12-21 16:57
-//val dateTime = LocalDateTime(2021, 12, 3, 16, 57)
-//val year = dateTime.year         // Get year as an integer
-//val month = dateTime.monthNumber // Get month as an integer
-//val day = dateTime.dayOfMonth    // Get day as an integer
-//val hour = dateTime.hour         // Get hour as an integer
-//val minutes = dateTime.minute    // Get minutes as an integer
-
-
 class taskList(){
     var tasklist= mutableListOf<MutableList<String>>()
     var command=""
@@ -69,16 +58,17 @@ class taskList(){
             println("Input the date (yyyy-mm-dd):")
             date = readln()
             if(date.isNullOrEmpty()){
+                println("The input date is invalid")
                 continue
             }
-            if("[\\w]+".toRegex().matches(date)){
+            if("[\\w]+".toRegex().matches(date)||"[\\s]+".toRegex().matches(date)){
                 println("The input date is invalid")
                 continue
             }
 
-            var a = date.split("-")
+            val a = date.split("-")
 
-            var date1=a[0]
+            var date1=String.format("%04d",a[0].toInt())
             date1+="-"
 
             date1+=String.format("%02d",a[1].toInt())
@@ -95,11 +85,13 @@ class taskList(){
                 println("The input date is invalid")
                 continue
             }
-            break
+
         }
         while(true){
             println("Input the time (hh:mm):")
             time = readln()
+            if(!"[\\d]+:[\\d]+".toRegex().matches(time))  {   println("The input time is invalid")
+                continue}
             var a = time.split(":")
             var time1=String.format("%02d",a[0].toInt())
             time1+=":"
@@ -113,10 +105,8 @@ class taskList(){
             }
             time=time1
 
-//            if("[0-12]:0?[0-59]".toRegex().matches(time))break
-//            else continue
         }
-        priority= date+" "+time+" "+CHNL.toUpperCase()
+        priority= date+" "+time+" "+CHNL.uppercase()
     }
     fun printlistMAin(){
         if(task==0) println("No tasks have been input")
