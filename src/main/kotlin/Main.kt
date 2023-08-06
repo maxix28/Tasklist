@@ -2,24 +2,18 @@ package tasklist
 import kotlinx.datetime.*
 import java.lang.Exception
 import java.time.LocalTime
-
-
 data class Tasklist(var index:Int, var tasklist :MutableList<String>,var priority:String,var date : String,var time:String,var mes:String)
-
 val list=mutableListOf<Tasklist>()
 var taskN=0
-
 var CHNL=""
 var time=" "
 var date=" "
 var mem =""
 fun setpriority(){
-
     while(true) {
         println("Input the task priority (C, H, N, L):")
-
-        CHNL = readln()
-        if("[C/h/l/n/c/N/H/L]".toRegex().matches(CHNL))break
+        CHNL = readln().uppercase()
+        if("[C/N/H/L]".toRegex().matches(CHNL))break
         else continue
     }
     while (true) {
@@ -33,16 +27,11 @@ fun setpriority(){
             println("The input date is invalid")
             continue
         }
-
         val a = date.split("-")
-
         var date1=String.format("%04d",a[0].toInt())
         date1+="-"
-
         date1+=String.format("%02d",a[1].toInt())
-
         date1+="-"
-
         date1+=String.format("%02d",a[2].toInt())
         date =date1
         date1+="T00:00:00Z"
@@ -77,9 +66,8 @@ fun setpriority(){
             println("The input time is invalid")
             continue
         }
-
     }
-    //  priority= date+" "+time+" "+CHNL.uppercase()+mem
+
 }
 fun add(){
     var tasklistTemp= mutableListOf<String>()
@@ -95,19 +83,17 @@ fun add(){
         i++
     }
     if(tasklistTemp.isEmpty()) println("The task is blank")
-
     else{ taskN++
 
-
         list.add(Tasklist(taskN,tasklistTemp,CHNL,date,time,mem))}
-    // tasklist.add(tasklistTemp)
+
 }
 
 fun edit(){
     var edt=""
     if(list.isEmpty()) println("No tasks have been input")
     else {
-        print()
+        fullPrint()
         while (true){
             println("Input the task number (1-${list.size}):")
             edt = readln()
@@ -122,7 +108,6 @@ fun edit(){
             }
             break
         }
-
         while(true){
             println("Input a field to edit (priority, date, time, task):")
             var change = readln()
@@ -136,7 +121,7 @@ fun edit(){
                         if("[C/h/l/n/c/N/H/L]".toRegex().matches(CHNL))break
                         else continue
                     }
-                    list[edt.toInt()-1]=list[edt.toInt()-1].copy(priority =temp)
+                    list[edt.toInt()-1].priority=temp
                 }
                 "date"->{
                     while (true) {
@@ -199,7 +184,7 @@ fun edit(){
                         }
 
                     }
-                    list[edt.toInt()-1]=list[edt.toInt()-1].copy(time=time)
+                    list[edt.toInt()-1].time=time
 
                 }
                 "task"->{
@@ -231,8 +216,8 @@ fun delete(){
 
     if(list.isEmpty()) println("No tasks have been input")
     else{
-        print()
-
+        //print()
+        fullPrint()
         while (true){
             println("Input the task number (1-${list.size}):")
             var del = readln()
@@ -249,38 +234,60 @@ fun delete(){
             println("The task is deleted")
             break
         }}
-
-
 }
+fun fullPrint(){
+    if(list.isEmpty()) println("No tasks have been input")
+    else{
+        var colortag="\\u001B[101m \\u001B[0m"
+        var i =1
 
-
-fun printlistsmall(tasklist:MutableList<String>){
-    var s=0
-    for (a in tasklist){
-//        if(s==0) println(a)
-//        else
-        println("   $a")
-        s++
-    }
-}
-fun print(){
-    if(taskN==0) println("No tasks have been input")
-    else {
-        var i = 1
-        for (a in list) {
-            if (i < 10) {
-                print("$i  ")
-                println("${a.date } ${a.time} ${a.priority} ${a.mes}")
-                printlistsmall(a.tasklist)
-            } else {
-                print("$i ")
-                println("${a.date } ${a.time} ${a.priority} ${a.mes}")
-                printlistsmall(a.tasklist)
+        println("+----+------------+-------+---+---+--------------------------------------------+\n" +
+                "| N  |    Date    | Time  | P | D |                   Task                     |\n" +
+                "+----+------------+-------+---+---+--------------------------------------------+")
+        for(a in list){
+            print("| $i  | ${a.date} | ${a.time} | ")
+            when(a.priority){
+                "C"-> print("\u001B[101m \u001B[0m")
+                "H"-> print("\u001B[103m \u001B[0m")
+                "N"-> print("\u001B[102m \u001B[0m")
+                "L"-> print("\u001B[104m \u001B[0m")
             }
-            println()
-            i++
+            print(" | ")
+            when(a.mes){
+                "O"-> print("\u001B[101m \u001B[0m")
+                "T"-> print("\u001B[103m \u001B[0m")
+                "I"-> print("\u001B[102m \u001B[0m")
+            }
+            print(" |")
+            smallprint(a.tasklist)
+            println("+----+------------+-------+---+---+--------------------------------------------+")
+            i++} }
+}
+fun smallprint(a:MutableList<String>){
+    var max = 45
+    if(a[0].length>44){
+        val inputString = a[0]
+        val chunkSize = 44
+        val chunks = inputString.chunked(chunkSize)
+
+        println((chunks[0]+"${"%${max-chunks[0].length}s".format("|")}"))
+        for(c in 1.. chunks.size-1){
+            println("|    |            |       |   |   |"+chunks[c]+"${"%${max-chunks[c].length}s".format("|")}")
         }
-    }
+    } else{ println(a[0]+"${"%${max-a[0].length}s".format("|")}")}
+
+    for(b in 1.. a.size-1)
+        if(a[b].length>44){
+            val inputString = a[b]
+            val chunkSize = 44
+            val chunks = inputString.chunked(chunkSize)
+            println(("|    |            |       |   |   |"+chunks[0]+"${"%${max-chunks[0].length}s".format("|")}"))
+            for(c in 1.. chunks.size-1){
+                println("|    |            |       |   |   |"+chunks[c]+"${"%${max-chunks[c].length}s".format("|")}")
+            }
+
+        }
+        else println("|    |            |       |   |   |"+a[b]+"${"%${max-a[b].length}s".format("|")}")
 }
 fun main(){
     while (true){
@@ -291,7 +298,8 @@ fun main(){
                 setpriority()
                 add()
             }
-            "print"->print()
+            "full"-> fullPrint()
+            "print"->fullPrint()
             "end"->break
             "delete"->delete()
             "edit"->edit()
@@ -299,5 +307,4 @@ fun main(){
         }
     }
     println("Tasklist exiting!")
-
 }
