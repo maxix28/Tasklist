@@ -2,6 +2,30 @@ package tasklist
 import kotlinx.datetime.*
 import java.lang.Exception
 import java.time.LocalTime
+import com.squareup.moshi.*
+import java.io.File
+val jsonFile = File("tasklist.json")
+val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+
+val TaskAdapter2= moshi.adapter(Tasklist::class.java)
+
+fun savetofile1(){
+    for ( a in 0 .. list.size-1){
+        jsonFile.appendText(TaskAdapter2.toJson(list[a]))}
+    jsonFile.appendText("\n")
+}
+
+fun getFile(){
+    val file = File("tasklist.json")
+    val lines = file.readLines()
+    var i =0
+    for(line in lines){
+        var new_task= TaskAdapter2.fromJson(line)
+        list.add(new_task!!)
+    }
+}
 data class Tasklist(var index:Int, var tasklist :MutableList<String>,var priority:String,var date : String,var time:String,var mes:String)
 val list=mutableListOf<Tasklist>()
 var taskN=0
@@ -290,6 +314,10 @@ fun smallprint(a:MutableList<String>){
         else println("|    |            |       |   |   |"+a[b]+"${"%${max-a[b].length}s".format("|")}")
 }
 fun main(){
+    //  val jsonFile = File("tasklist.json")
+    if(File("tasklist.json").exists()){
+        getFile()}
+    // jsonFile.writeText("[")
     while (true){
         println("Input an action (add, print, edit, delete, end):")
         var command= readln()
@@ -306,5 +334,7 @@ fun main(){
             else-> println("The input action is invalid")
         }
     }
+
+    savetofile1()
     println("Tasklist exiting!")
 }
